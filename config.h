@@ -91,16 +91,14 @@ static const Key keys[] = {
 	{ MODKEY,                       XK_semicolon, focusmon,    {.i = +1 } },
 	{ MODKEY|ShiftMask,             XK_comma,  tagmon,         {.i = -1 } },
 	{ MODKEY|ShiftMask,             XK_semicolon, tagmon,      {.i = +1 } },
-	TAGKEYS(                        XK_ampersand,              0)
-	TAGKEYS(                        XK_eacute,                 1)
-	TAGKEYS(                        XK_quotedbl,               2)
-	TAGKEYS(                        XK_apostrophe,             3)
-	TAGKEYS(                        XK_parenleft,              4)
-	TAGKEYS(                        XK_minus,                  5)
-	TAGKEYS(                        XK_egrave,                 6)
-	TAGKEYS(                        XK_underscore,             7)
-	TAGKEYS(                        XK_ccedilla,               8)
-        { MODKEY|ShiftMask,             XK_l,      spawn,          SHCMD("slock") },
+	TAGKEYS(                        XK_1,  0)
+	TAGKEYS(                        XK_2,  1)
+	TAGKEYS(                        XK_3,  2)
+	TAGKEYS(                        XK_4,  3)
+	TAGKEYS(                        XK_5,  4)
+	TAGKEYS(                        XK_6,  5)
+	TAGKEYS(                        XK_7,  6)
+	{ MODKEY|ShiftMask,             XK_l,      spawn,          SHCMD("slock") },
         { MODKEY|ShiftMask,             XK_q,      spawn,          SHCMD("~/.local/bin/dmenu-dwm-exit.sh") },
 	{ MODKEY, XK_r,      quit,           {1} }, 
 };
