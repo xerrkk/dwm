@@ -139,6 +139,10 @@ typedef struct {
 	int monitor;
 } Rule;
 
+typedef struct {
+	int x, y, w, h;
+} DwmLogo;
+
 /* function declarations */
 static void applyrules(Client *c);
 static void sighup(int unused);
@@ -434,15 +438,10 @@ buttonpress(XEvent *e)
 	}
 	if (ev->window == selmon->barwin) {
 		i = x = 0;
-		unsigned int occ = 0;
-		for(c = m->clients; c; c=c->next)
-			occ |= c->tags == TAGMASK ? 0 : c->tags;
-		do {
-			/* Do not reserve space for vacant tags */
-			if (!(occ & 1 << i || m->tagset[m->seltags] & 1 << i))
-				continue;
+		x = dwmlogowdth; /* dwm logo width */
+		do
 			x += TEXTW(tags[i]);
-		} while (ev->x >= x && ++i < LENGTH(tags));
+		while (ev->x >= x && ++i < LENGTH(tags));
 		if (i < LENGTH(tags)) {
 			click = ClkTagBar;
 			arg.ui = 1 << i;
@@ -706,6 +705,7 @@ void
 drawbar(Monitor *m)
 {
 	int x, w, tw = 0;
+	int stroke = 4, letterHeight = bh - 4;
 	int boxs = drw->fonts->h / 9;
 	int boxw = drw->fonts->h / 6 + 2;
 	unsigned int i, occ = 0, urg = 0;
@@ -722,18 +722,44 @@ drawbar(Monitor *m)
 	}
 
 	for (c = m->clients; c; c = c->next) {
-		occ |= c->tags == TAGMASK ? 0 : c->tags;
+		occ |= c->tags;
 		if (c->isurgent)
 			urg |= c->tags;
 	}
-	x = 0;
+
+	/* use colored scheme for visibility */
+	drw_setscheme(drw, scheme[SchemeNorm]);
+
+	/* draw dark background for logo */
+	drw_rect(drw, 0, 0, dwmlogowdth, bh, 1, 1);
+
+	/* draw dwm logo */
+	const DwmLogo dwmLogo[] = {
+		{  0,  9, stroke, letterHeight / 2 }, /* d: left vertical */
+		{  0, 15,     35, stroke           }, /* d: bottom horizontal */
+		{ 13,  1, stroke, letterHeight     }, /* d: right vertical */
+		{  0,  7,     15, stroke           }, /* d: top horizontal */
+		{ 22,  7, stroke, letterHeight / 2 }, /* w: center vertical */
+		{ 31,  7, stroke, letterHeight / 2 }, /* w: right vertical */
+		{ 31,  7,     22, stroke           }, /* m: top horizontal */
+		{ 40, 11, stroke, letterHeight / 2 }, /* m: center vertical */
+		{ 49, 11, stroke, letterHeight / 2 }  /* m: right vertical */
+	};
+
+	for (int i = 0; i < LENGTH(dwmLogo); i++) {
+		drw_rect(drw, dwmLogo[i].x, dwmLogo[i].y, dwmLogo[i].w, dwmLogo[i].h, 1, 0);
+	}
+
+	/* start drawing tags after logo */
+	x = dwmlogowdth;
 	for (i = 0; i < LENGTH(tags); i++) {
-		/* Do not draw vacant tags */
-		if(!(occ & 1 << i || m->tagset[m->seltags] & 1 << i))
-			continue;
 		w = TEXTW(tags[i]);
 		drw_setscheme(drw, scheme[m->tagset[m->seltags] & 1 << i ? SchemeSel : SchemeNorm]);
 		drw_text(drw, x, 0, w, bh, lrpad / 2, tags[i], urg & 1 << i);
+		if (occ & 1 << i)
+			drw_rect(drw, x + boxs, boxs, boxw, boxw,
+				m == selmon && selmon->sel && selmon->sel->tags & 1 << i,
+				urg & 1 << i);
 		x += w;
 	}
 	w = TEXTW(m->ltsymbol);

@@ -1,0 +1,7 @@
+dwm
+stest
+*.o
+*.out
+*.bin
+*.rej
+*.orig
