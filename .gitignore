@@ -1,6 +1,8 @@
 dwm
 stest
 *.o
+*~
+*.diff
 *.out
 *.bin
 *.rej
