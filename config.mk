@@ -1,31 +1,28 @@
-
-# compiler and linker
-CC = cc
 # dwm version
 VERSION = 6.6
 
 # Customize below to fit your system
 
 # paths
-# Guix doesn't allow writing to /usr/local. Install to your home folder instead.
+# In Guix, you cannot write to /usr/local. 
+# This installs dwm to your user's local folder.
 PREFIX = ${HOME}/.local
 MANPREFIX = ${PREFIX}/share/man
 
-# Use pkg-config to find X11 paths
+# Use pkg-config (pkgconf) to find X11 paths dynamically
 X11INC = $(shell pkg-config --cflags x11)
 X11LIB = $(shell pkg-config --libs x11)
 
-# Xinerama, comment if you don't want it
+# Xinerama
 XINERAMALIBS  = $(shell pkg-config --libs xinerama)
 XINERAMAFLAGS = -DXINERAMA
 
-# freetype / Xft
-# This fixes the ft2build.h and Xft.h errors by pulling correct store paths
-FREETYPELIBS = $(shell pkg-config --libs xft)
-FREETYPEINC = $(shell pkg-config --cflags xft)
+# Freetype / Xft / Fontconfig
+# This solves the FcCharSetAddChar and missing header errors
+FREETYPELIBS = $(shell pkg-config --libs xft fontconfig)
+FREETYPEINC = $(shell pkg-config --cflags xft fontconfig)
 
 # includes and libs
-# Note: FREETYPEINC already includes the -I prefix
 INCS = ${X11INC} ${FREETYPEINC}
 LIBS = ${X11LIB} ${XINERAMALIBS} ${FREETYPELIBS}
 
@@ -35,5 +32,4 @@ CFLAGS   = -std=c99 -pedantic -Wall -Wno-deprecated-declarations -Os ${INCS} ${C
 LDFLAGS  = ${LIBS}
 
 # compiler and linker
-
 CC = gcc
